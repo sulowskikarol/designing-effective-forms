@@ -83,6 +83,21 @@ function getCountryCode(countryName) {
     });
 }
 
+myForm.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        myForm.requestSubmit();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const vatCheckbox = document.getElementById('vatUE');
+    const vatFields = document.getElementById('vatFields');
+
+    vatCheckbox.addEventListener('change', () => {
+        vatFields.style.display = vatCheckbox.checked ? 'block' : 'none';
+    });
+});
 
 (() => {
     // nasłuchiwania na zdarzenie kliknięcia myszką
