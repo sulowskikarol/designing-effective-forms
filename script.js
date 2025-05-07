@@ -29,7 +29,13 @@ function getCountryByIP() {
         .then(response => response.json())
         .then(data => {
             const country = data.country;
-            // TODO inject country to form and call getCountryCode(country) function
+            const countrySelect = document.getElementById("country");
+            const options = Array.from(countrySelect.options);
+            const match = options.find(o => o.value.toLowerCase() === country.toLowerCase());
+            if (match) {
+                match.selected = true;
+                getCountryCode(match.value);
+            }
         })
         .catch(error => {
             console.error('Błąd pobierania danych z serwera GeoJS:', error);
@@ -48,7 +54,13 @@ function getCountryCode(countryName) {
     })
     .then(data => {        
         const countryCode = data[0].idd.root + data[0].idd.suffixes.join("")
-        // TODO inject countryCode to form
+        const select = document.getElementById("countryCode");
+        for (let option of select.options) {
+            if (option.value.includes(countryCode)) {
+                option.selected = true;
+                break;
+            }
+        }
     })
     .catch(error => {
         console.error('Wystąpił błąd:', error);
@@ -61,4 +73,5 @@ function getCountryCode(countryName) {
     document.addEventListener('click', handleClick);
 
     fetchAndFillCountries();
+    getCountryByIP();
 })()
