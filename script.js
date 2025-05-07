@@ -1,4 +1,5 @@
 let clickCount = 0;
+let countrySelect;
 
 const countryInput = document.getElementById('country');
 const myForm = document.getElementById('form');
@@ -19,6 +20,19 @@ async function fetchAndFillCountries() {
         const data = await response.json();
         const countries = data.map(country => country.name.common);
         countryInput.innerHTML = countries.map(country => `<option value="${country}">${country}</option>`).join('');
+    
+        if (!countrySelect) {
+            countrySelect = new TomSelect('#country', {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: "Wybierz kraj",
+                allowEmptyOption: true,
+            });
+            getCountryByIP();
+        }
     } catch (error) {
         console.error('Wystąpił błąd:', error);
     }
@@ -29,12 +43,14 @@ function getCountryByIP() {
         .then(response => response.json())
         .then(data => {
             const country = data.country;
-            const countrySelect = document.getElementById("country");
-            const options = Array.from(countrySelect.options);
-            const match = options.find(o => o.value.toLowerCase() === country.toLowerCase());
-            if (match) {
-                match.selected = true;
-                getCountryCode(match.value);
+            if (countrySelect) {
+                const exists = Object.values(countrySelect.options).some(
+                    opt => opt.value.toLowerCase() === country.toLowerCase()
+                );
+                if (exists) {
+                    countrySelect.setValue(country);
+                    getCountryCode(country);
+                }
             }
         })
         .catch(error => {
@@ -73,5 +89,4 @@ function getCountryCode(countryName) {
     document.addEventListener('click', handleClick);
 
     fetchAndFillCountries();
-    getCountryByIP();
 })()
